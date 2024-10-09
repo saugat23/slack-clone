@@ -12,15 +12,46 @@ import { FcGoogle } from 'react-icons/fc';
 import { FaGithub } from 'react-icons/fa';
 import { SignInFlow } from '../types';
 import { useState } from 'react';
+import { TriangleAlert } from 'lucide-react';
+import { useAuthActions } from '@convex-dev/auth/react';
 
 interface SignUpCardProps {
   setState: (state: SignInFlow) => void;
 }
 
-export default function SignInCard({ setState }: SignUpCardProps) {
+export default function SignUpCard({ setState }: SignUpCardProps) {
+  const { signIn } = useAuthActions();
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
+  const [pending, setPending] = useState(false);
+
+  const onPasswordSignUp = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match!');
+      return;
+    }
+    setPending(true);
+
+    signIn('password', { name, email, password, flow: 'signUp' })
+      .catch(() => {
+        setError('Invalid email or password!');
+      })
+      .finally(() => {
+        setPending(false);
+      });
+  };
+
+  const handleProviderSignUp = (value: 'github' | 'google') => {
+    setPending(true);
+    signIn(value).finally(() => {
+      setPending(false);
+    });
+  };
 
   return (
     <>
@@ -31,10 +62,26 @@ export default function SignInCard({ setState }: SignUpCardProps) {
             Use your email or another service to continue
           </CardDescription>
         </CardHeader>
+        {!!error && (
+          <div className='bg-destructive/15 p-3 rounded-md flex items-center gap-x-2 text-sm text-destructive mb-6'>
+            <TriangleAlert className='size-4' />
+            <p>{error}</p>
+          </div>
+        )}
         <CardContent className='space-y-5 px-0 pb-0'>
-          <form className='space-y-2.5'>
+          <form onSubmit={onPasswordSignUp} className='space-y-2.5'>
             <Input
-              disabled={false}
+              disabled={pending}
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+              }}
+              placeholder='Full Name'
+              type='text'
+              required
+            />
+            <Input
+              disabled={pending}
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
@@ -44,7 +91,7 @@ export default function SignInCard({ setState }: SignUpCardProps) {
               required
             />
             <Input
-              disabled={false}
+              disabled={pending}
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
@@ -54,7 +101,7 @@ export default function SignInCard({ setState }: SignUpCardProps) {
               required
             />
             <Input
-              disabled={false}
+              disabled={pending}
               value={confirmPassword}
               onChange={(e) => {
                 setConfirmPassword(e.target.value);
@@ -63,7 +110,12 @@ export default function SignInCard({ setState }: SignUpCardProps) {
               type='password'
               required
             />
-            <Button className='w-full' type='submit' size='lg' disabled={false}>
+            <Button
+              className='w-full'
+              type='submit'
+              size='lg'
+              disabled={pending}
+            >
               Continue
             </Button>
           </form>
@@ -72,8 +124,8 @@ export default function SignInCard({ setState }: SignUpCardProps) {
             <Button
               type='button'
               variant='outline'
-              onClick={() => {}}
-              disabled={false}
+              onClick={() => handleProviderSignUp('google')}
+              disabled={pending}
               size='lg'
               className='w-full relative'
             >
@@ -83,8 +135,8 @@ export default function SignInCard({ setState }: SignUpCardProps) {
             <Button
               type='button'
               variant='outline'
-              onClick={() => {}}
-              disabled={false}
+              onClick={() => handleProviderSignUp('github')}
+              disabled={pending}
               size='lg'
               className='w-full relative'
             >
