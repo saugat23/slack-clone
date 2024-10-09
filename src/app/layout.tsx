@@ -3,6 +3,8 @@ import './globals.css';
 import { Inter } from 'next/font/google';
 import { ConvexClientProvider } from './ConvexClientProvider';
 import { ConvexAuthNextjsServerProvider } from '@convex-dev/auth/nextjs/server';
+import { Modals } from '@/components/modals';
+import { Toaster } from 'sonner';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -23,7 +25,11 @@ export default function RootLayout({
     <ConvexAuthNextjsServerProvider>
       <html lang='en'>
         <body className={`${inter.variable} font-inter antialiased`}>
-          <ConvexClientProvider>{children}</ConvexClientProvider>
+          <ConvexClientProvider>
+            <Toaster richColors expand position='top-right' />
+            <Modals />
+            {children}
+          </ConvexClientProvider>
         </body>
       </html>
     </ConvexAuthNextjsServerProvider>
