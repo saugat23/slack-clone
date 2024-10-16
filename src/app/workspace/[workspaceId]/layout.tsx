@@ -12,9 +12,8 @@ export default function WorkspaceLayout({ children }: WorkspaceIdLayoutProps) {
       <div className='h-full'>
         <Toolbar />
         <div className='flex h-[calc(100vh-40px)]'>
-        <Sidebar />
-        {children}
-
+          <Sidebar />
+          {children}
         </div>
       </div>
     </>
