@@ -38,7 +38,11 @@ export default function WorkspaceSwitcher() {
             )}
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent side='bottom' align='start' className='w-64 bg-white p-3 rounded-md flex flex-col mt-2 shadow-md gap-y-2'>
+        <DropdownMenuContent
+          side='bottom'
+          align='start'
+          className='w-64 bg-white p-3 rounded-md flex flex-col mt-2 shadow-md gap-y-2'
+        >
           <DropdownMenuItem
             onClick={() => router.push(`/workspace/${workspaceId}`)}
             className='cursor-pointer flex flex-col justify-start items-start capitalize hover:bg-accent'
